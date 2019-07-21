@@ -1,102 +1,57 @@
-%% 导入文本文件中的数据。
-%load('TMSD.mat')
-% %% 初始化变量。
-% filename = '.\XDATCAR_fract.xyz';
-% delimiter = ' ';
-% 
-% %% 每个文本行的格式:
-% %   列2: 双精度值 (%f)
-% %	列3: 双精度值 (%f)
-% %   列4: 双精度值 (%f)
-% % 有关详细信息，请参阅 TEXTSCAN 文档。
-% formatSpec = '%*s%f%f%f%[^\n\r]';
-% 
-% %% 打开文本文件。
-% fileID = fopen(filename,'r');
-% 
-% %% 根据格式读取数据列。
-% % 该调用基于生成此代码所用的文件的结构。如果其他文件出现错误，请尝试通过导入工具重新生成代码。
-% dataArray = textscan(fileID, formatSpec, 'Delimiter', delimiter, 'MultipleDelimsAsOne', true, 'TextType', 'string', 'EmptyValue', NaN,  'ReturnOnError', false);
-% 
-% %% 关闭文本文件。
-% fclose(fileID);
-% 
-% %% 对无法导入的数据进行的后处理。
-% % 在导入过程中未应用无法导入的数据的规则，因此不包括后处理代码。要生成适用于无法导入的数据的代码，请在文件中选择无法导入的元胞，然后重新生成脚本。
-% 
-% %% 将导入的数组分配给列变量名称
-% x = dataArray{:, 1};
-% y = dataArray{:, 2};
-% z = dataArray{:, 3};
-% 
-% 
-% %% 清除临时变量
-% clearvars filename delimiter formatSpec fileID dataArray ans;
-% %%
-% filename = '.\lattice.vectors';
-% delimiter = ' ';
-% 
-% %% 将数据列作为文本读取:
-% % 有关详细信息，请参阅 TEXTSCAN 文档。
-% formatSpec = '%s%s%s%[^\n\r]';
-% 
-% %% 打开文本文件。
-% fileID = fopen(filename,'r');
-% 
-% %% 根据格式读取数据列。
-% % 该调用基于生成此代码所用的文件的结构。如果其他文件出现错误，请尝试通过导入工具重新生成代码。
-% dataArray = textscan(fileID, formatSpec, 'Delimiter', delimiter, 'MultipleDelimsAsOne', true, 'TextType', 'string',  'ReturnOnError', false);
-% 
-% %% 关闭文本文件。
-% fclose(fileID);
-% 
-% %% 将包含数值文本的列内容转换为数值。
-% % 将非数值文本替换为 NaN。
-% raw = repmat({''},length(dataArray{1}),length(dataArray)-1);
-% for col=1:length(dataArray)-1
-%     raw(1:length(dataArray{col}),col) = mat2cell(dataArray{col}, ones(length(dataArray{col}), 1));
-% end
-% numericData = NaN(size(dataArray{1},1),size(dataArray,2));
-% 
-% for col=[1,2,3]
-%     % 将输入元胞数组中的文本转换为数值。已将非数值文本替换为 NaN。
-%     rawData = dataArray{col};
-%     for row=1:size(rawData, 1)
-%         % 创建正则表达式以检测并删除非数值前缀和后缀。
-%         regexstr = '(?<prefix>.*?)(?<numbers>([-]*(\d+[\,]*)+[\.]{0,1}\d*[eEdD]{0,1}[-+]*\d*[i]{0,1})|([-]*(\d+[\,]*)*[\.]{1,1}\d+[eEdD]{0,1}[-+]*\d*[i]{0,1}))(?<suffix>.*)';
-%         try
-%             result = regexp(rawData(row), regexstr, 'names');
-%             numbers = result.numbers;
-%             
-%             % 在非千位位置中检测到逗号。
-%             invalidThousandsSeparator = false;
-%             if numbers.contains(',')
-%                 thousandsRegExp = '^\d+?(\,\d{3})*\.{0,1}\d*$';
-%                 if isempty(regexp(numbers, thousandsRegExp, 'once'))
-%                     numbers = NaN;
-%                     invalidThousandsSeparator = true;
-%                 end
-%             end
-%             % 将数值文本转换为数值。
-%             if ~invalidThousandsSeparator
-%                 numbers = textscan(char(strrep(numbers, ',', '')), '%f');
-%                 numericData(row, col) = numbers{1};
-%                 raw{row, col} = numbers{1};
-%             end
-%         catch
-%             raw{row, col} = rawData{row};
-%         end
-%     end
-% end
-% 
-% 
-% %% 创建输出变量
-% lattice = cell2mat(raw);
-% %% 清除临时变量
-% clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData rawData row regexstr result numbers invalidThousandsSeparator thousandsRegExp;
-%% Data process
+%% Load the result from previous run. If this is the first run, this segment should be referenced.
+load('TMSD.mat')
+%% Get fractional coordinates 
+filename = '.\XDATCAR_fract.xyz';
+delimiter = ' ';
+formatSpec = '%*s%f%f%f%[^\n\r]';
+fileID = fopen(filename,'r');
+dataArray = textscan(fileID, formatSpec, 'Delimiter', delimiter, 'MultipleDelimsAsOne', true, 'TextType', 'string', 'EmptyValue', NaN,  'ReturnOnError', false);
+fclose(fileID);
+x = dataArray{:, 1};
+y = dataArray{:, 2};
+z = dataArray{:, 3};
+clearvars filename delimiter formatSpec fileID dataArray ans;
+%% Get the size of lattice
+filename = '.\lattice.vectors';
+delimiter = ' ';
+formatSpec = '%s%s%s%[^\n\r]';
+fileID = fopen(filename,'r');
+dataArray = textscan(fileID, formatSpec, 'Delimiter', delimiter, 'MultipleDelimsAsOne', true, 'TextType', 'string',  'ReturnOnError', false);
+fclose(fileID);
+raw = repmat({''},length(dataArray{1}),length(dataArray)-1);
+for col=1:length(dataArray)-1
+    raw(1:length(dataArray{col}),col) = mat2cell(dataArray{col}, ones(length(dataArray{col}), 1));
+end
+numericData = NaN(size(dataArray{1},1),size(dataArray,2));
 
-%%
+for col=[1,2,3]
+    rawData = dataArray{col};
+    for row=1:size(rawData, 1)
+        regexstr = '(?<prefix>.*?)(?<numbers>([-]*(\d+[\,]*)+[\.]{0,1}\d*[eEdD]{0,1}[-+]*\d*[i]{0,1})|([-]*(\d+[\,]*)*[\.]{1,1}\d+[eEdD]{0,1}[-+]*\d*[i]{0,1}))(?<suffix>.*)';
+        try
+            result = regexp(rawData(row), regexstr, 'names');
+            numbers = result.numbers;
+            invalidThousandsSeparator = false;
+            if numbers.contains(',')
+                thousandsRegExp = '^\d+?(\,\d{3})*\.{0,1}\d*$';
+                if isempty(regexp(numbers, thousandsRegExp, 'once'))
+                    numbers = NaN;
+                    invalidThousandsSeparator = true;
+                end
+            end
+            if ~invalidThousandsSeparator
+                numbers = textscan(char(strrep(numbers, ',', '')), '%f');
+                numericData(row, col) = numbers{1};
+                raw{row, col} = numbers{1};
+            end
+        catch
+            raw{row, col} = rawData{row};
+        end
+    end
+end
+lattice = cell2mat(raw);
+clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData rawData row regexstr result numbers invalidThousandsSeparator thousandsRegExp;
+%% Get the coordinate of Lithum ions' coordinates
 Li=zeros(size(x,1)/33,3,15);
 for i=1:15
 Li(:,1,i)=x(2+i:33:end)';
@@ -126,8 +81,7 @@ Li(:,1,:)=Li(:,1,:)*lattice(1,1);
 Li(:,2,:)=Li(:,2,:)*lattice(2,2);
 Li(:,3,:)=Li(:,3,:)*lattice(3,3);
 
-%%
-
+%% Plot the trajectory of one Lithium ion, you can choose the ions by changing the third parameter of Li(*,*,*)
 % figure
 % plot3(Li(:,1,1),Li(:,2,1),Li(:,3,1))
 % axis equal
@@ -150,7 +104,7 @@ Li(:,3,:)=Li(:,3,:)*lattice(3,3);
 % pause(0.0001)
 % end
 
-%%
+%% Total MSD 
 TMSD=zeros(size(Li,1)-1,1);
 for t=1:size(Li,1)-1
     S=zeros(size(Li,1)-t+1,size(Li,3));
@@ -165,7 +119,7 @@ for t=1:size(Li,1)-1
         t
     end
 end
-%%
+%% A slower version of code to calculate the TMSD
 % TMSD=zeros(size(Li,1)-1,1);
 % for t=1:size(Li,1)-1
 %     S=0;
@@ -191,7 +145,7 @@ end
 t=(1:size(OMSD,1))*2;
 plot(t,OMSD)
 hold on
-%%
+%% Plot the result of TMSD
 t=(1:size(TMSD,1))*2;
 %plot(log(t),log(TMSD/15))
 plot(t,TMSD/15)
@@ -210,5 +164,5 @@ ylabel('MSD(A^2)')
 % hold on
 % line([8 12],[0 0],'Color','red','LineStyle','--')
 
-%%
-%save 'TMSD.mat' TMSD
+%% Save the TMSD result
+save 'TMSD.mat' TMSD

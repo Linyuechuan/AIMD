@@ -1,34 +1,19 @@
-%   N is the number of mobile ion
-%   q(C) is the charge of ions
-%   d is the degree of freedom
-%   dt(fs) is the distance
-%   varargin '700',700,'1000',1000,......
-%   Any output is in SI units.
+
+% N is the number of mobile Lithium ions, q is the charge of lithum ions in Coulomb, d is the dimension of the diffusion, dt is the time step in AIMD calculation in fs
+% varargin allows you to input the folder name and temperature (K) in the folleing fashion
+% '1000data',1000,'1200_1',1200,'1200_2',1200,'1400',1400...
 function [D_0,E_a,Conductivity,D_300]=ResultMSD(N,q,d,dt,varargin)
 n=nargin-4;
 T=cell2mat(varargin(1,2:2:n));
 D=ones(1,n/2);
 RSD=ones(1,n/2);
-%%
+%% Get the size of lattice
 filename = ['.\' varargin{1,1} '\lattice.vectors']
 delimiter = ' ';
-
-%% 将数据列作为文本读取:
-% 有关详细信息，请参阅 TEXTSCAN 文档。
 formatSpec = '%s%s%s%[^\n\r]';
-
-%% 打开文本文件。
 fileID = fopen(filename,'r');
-
-%% 根据格式读取数据列。
-% 该调用基于生成此代码所用的文件的结构。如果其他文件出现错误，请尝试通过导入工具重新生成代码。
 dataArray = textscan(fileID, formatSpec, 'Delimiter', delimiter, 'MultipleDelimsAsOne', true, 'TextType', 'string',  'ReturnOnError', false);
-
-%% 关闭文本文件。
 fclose(fileID);
-
-%% 将包含数值文本的列内容转换为数值。
-% 将非数值文本替换为 NaN。
 raw = repmat({''},length(dataArray{1}),length(dataArray)-1);
 for col=1:length(dataArray)-1
     raw(1:length(dataArray{col}),col) = mat2cell(dataArray{col}, ones(length(dataArray{col}), 1));
@@ -36,16 +21,13 @@ end
 numericData = NaN(size(dataArray{1},1),size(dataArray,2));
 
 for col=[1,2,3]
-    % 将输入元胞数组中的文本转换为数值。已将非数值文本替换为 NaN。
     rawData = dataArray{col};
     for row=1:size(rawData, 1)
-        % 创建正则表达式以检测并删除非数值前缀和后缀。
         regexstr = '(?<prefix>.*?)(?<numbers>([-]*(\d+[\,]*)+[\.]{0,1}\d*[eEdD]{0,1}[-+]*\d*[i]{0,1})|([-]*(\d+[\,]*)*[\.]{1,1}\d+[eEdD]{0,1}[-+]*\d*[i]{0,1}))(?<suffix>.*)';
         try
             result = regexp(rawData(row), regexstr, 'names');
             numbers = result.numbers;
             
-            % 在非千位位置中检测到逗号。
             invalidThousandsSeparator = false;
             if numbers.contains(',')
                 thousandsRegExp = '^\d+?(\,\d{3})*\.{0,1}\d*$';
@@ -54,7 +36,7 @@ for col=[1,2,3]
                     invalidThousandsSeparator = true;
                 end
             end
-            % 将数值文本转换为数值。
+            
             if ~invalidThousandsSeparator
                 numbers = textscan(char(strrep(numbers, ',', '')), '%f');
                 numericData(row, col) = numbers{1};
@@ -65,13 +47,9 @@ for col=[1,2,3]
         end
     end
 end
-
-
-%% 创建输出变量
 lattice = cell2mat(raw);
-%% 清除临时变量
 clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData rawData row regexstr result numbers invalidThousandsSeparator thousandsRegExp;
-%%
+%% Arrhenius relation fitting with uncertainty
 V=lattice(1,1)*lattice(2,2)*lattice(3,3)*10^(-30);
 for i=1:n/2
     [D(1,i),RSD(1,i)]=AnalysisMSD(varargin{2*i-1},d,dt,N);
