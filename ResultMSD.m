@@ -1,8 +1,12 @@
 
-% N is the number of mobile Lithium ions, q is the charge of lithum ions in Coulomb, d is the dimension of the diffusion, dt is the time step in AIMD calculation in fs
+% N is the number of mobile Lithium ions, q is the charge of lithum ions in
+% Coulomb, d is the dimension of the diffusion, dt is the time step in AIMD
+% calculation in fs, a is the average site distance of lithium ion in Angstorm
+
 % varargin allows you to input the folder name and temperature (K) in the folleing fashion
 % '1000data',1000,'1200_1',1200,'1200_2',1200,'1400',1400...
-function [D_0,E_a,Conductivity,D_300]=ResultMSD(N,q,d,dt,varargin)
+
+function [D_0,E_a,Conductivity,D_300]=ResultMSD(N,q,d,dt,a,varargin)
 n=nargin-4;
 T=cell2mat(varargin(1,2:2:n));
 D=ones(1,n/2);
@@ -52,7 +56,7 @@ clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData
 %% Arrhenius relation fitting with uncertainty
 V=lattice(1,1)*lattice(2,2)*lattice(3,3)*10^(-30);
 for i=1:n/2
-    [D(1,i),RSD(1,i)]=AnalysisMSD(varargin{2*i-1},d,dt,N);
+    [D(1,i),RSD(1,i)]=AnalysisMSD(varargin{2*i-1},d,dt,N,a);
 end
 x=1000./T;
 y=log10(D);

@@ -1,5 +1,5 @@
 
-function [D,RSD]=AnalysisMSD(s,d,dt,N)
+function [D,RSD]=AnalysisMSD(s,d,dt,N,a)
 %% Load datas. fitrange.mat must be created manually under the same folder of TMSD.mat.
 dir1=['./' s '/TMSD.mat'];
 dir2=['./' s '/fitrange.mat'];
@@ -21,6 +21,6 @@ saveas(gcf,s)
 saveas(gcf,[s,'.jpg'])
 hold off
 D=f.p1/2/d/10^(5);
-Nhoop=max(TMSD)/(2.77^2);
+Nhoop=max(TMSD)/(a^2);
 RSD=(3.43/sqrt(Nhoop)+0.04);
 end
