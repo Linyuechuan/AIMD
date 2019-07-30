@@ -5,7 +5,7 @@ This is a set of Matlab scripts that can plot MSD graph and calculate the diffus
 Engineering Physics U of M
 Mechanical Engineering Join Institute
 # Compuatation Resource is received from Prof. Hong Zhu
-# Partner: Ronghan Chen
+# Partner: Ronghan Chen Zhenming Xu
 
 # Orgnization of the files
 In order to use the code to calculate the diffusion rate, 'XDATCAR' file from different runs should be saved in different folder with meaning full name and all the folder should be in a common folder. 
