@@ -1,7 +1,9 @@
 %% Load the result from previous run. If this is the first run, this segment should be referenced.
-load('TMSD.mat')
+%load('TMSD.mat')
+n=41;
+m=23;
 %% Get fractional coordinates 
-filename = '.\XDATCAR_fract.xyz';
+filename = 'XDATCAR_fract.xyz';
 delimiter = ' ';
 formatSpec = '%*s%f%f%f%[^\n\r]';
 fileID = fopen(filename,'r');
@@ -12,7 +14,7 @@ y = dataArray{:, 2};
 z = dataArray{:, 3};
 clearvars filename delimiter formatSpec fileID dataArray ans;
 %% Get the size of lattice
-filename = '.\lattice.vectors';
+filename ='lattice.vectors';
 delimiter = ' ';
 formatSpec = '%s%s%s%[^\n\r]';
 fileID = fopen(filename,'r');
@@ -52,11 +54,11 @@ end
 lattice = cell2mat(raw);
 clearvars filename delimiter formatSpec fileID dataArray ans raw col numericData rawData row regexstr result numbers invalidThousandsSeparator thousandsRegExp;
 %% Get the coordinate of Lithum ions' coordinates
-Li=zeros(size(x,1)/33,3,15);
-for i=1:15
-Li(:,1,i)=x(2+i:33:end)';
-Li(:,2,i)=y(2+i:33:end)';
-Li(:,3,i)=z(2+i:33:end)';
+Li=zeros(size(x,1)/n,3,m);
+for i=1:m
+Li(:,1,i)=x(2+i:n:end)';
+Li(:,2,i)=y(2+i:n:end)';
+Li(:,3,i)=z(2+i:n:end)';
 end
 % plot3(Li1(1,:),Li1(2,:),Li1(3,:),'.')
 % xlim([0 1])
@@ -148,11 +150,11 @@ hold on
 %% Plot the result of TMSD
 t=(1:size(TMSD,1))*2;
 %plot(log(t),log(TMSD/15))
-plot(t,TMSD/15)
+plot(t,TMSD/m)
 hold off
 xlabel('t(fs)')
 ylabel('MSD(A^2)')
-%saveas(gcf,'MSDplot.jpg')
+saveas(gcf,'MSDplot.jpg')
 %%
 % t=(1:size(TMSD,1))*2;
 % plot(log(t(1:end)),log(TMSD/15))

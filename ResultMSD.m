@@ -7,12 +7,12 @@
 % '1000data',1000,'1200_1',1200,'1200_2',1200,'1400',1400...
 
 function [D_0,E_a,Conductivity,D_300]=ResultMSD(N,q,d,dt,a,varargin)
-n=nargin-4;
+n=nargin-5;
 T=cell2mat(varargin(1,2:2:n));
 D=ones(1,n/2);
 RSD=ones(1,n/2);
 %% Get the size of lattice
-filename = ['.\' varargin{1,1} '\lattice.vectors']
+filename = [varargin{1,1} '/lattice.vectors']
 delimiter = ' ';
 formatSpec = '%s%s%s%[^\n\r]';
 fileID = fopen(filename,'r');
