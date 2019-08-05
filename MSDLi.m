@@ -178,3 +178,4 @@ saveas(gcf,'MSDplot.jpg')
 
 %% Save the TMSD result
 save 'TMSD.mat' TMSD
+save 'MSD.mat' MSD
