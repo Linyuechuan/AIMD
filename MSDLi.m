@@ -8,7 +8,7 @@ formatSpec = '%f%f%f%[^\n\r]';
 fileID = fopen(filename,'r');
 dataArray = textscan(fileID, formatSpec, endRow-startRow+1, 'Delimiter', delimiter, 'MultipleDelimsAsOne', true, 'TextType', 'string', 'HeaderLines', startRow-1, 'ReturnOnError', false, 'EndOfLine', '\r\n')
 fclose(fileID);
-m = dataArray{:, 1};
+m = dataArray{1,:};
 n=sum(cell2mat(dataArray(1,1:end-1)))+2;
 clearvars filename delimiter startRow endRow formatSpec fileID dataArray ans;
 
@@ -77,7 +77,7 @@ end
 % xlabel('x')
 % ylabel('y')
 % zlabel('z')
-for k=1:15
+for k=1:m
     for i=1:size(Li,1)-1
         for j=1:3
             if Li(i+1,j,k)-Li(i,j,k)>0.8
@@ -121,7 +121,7 @@ TMSD=zeros(size(Li,1)-1,1);
 for t=1:size(Li,1)-1
     S=zeros(size(Li,1)-t+1,size(Li,3));
     for i=1:size(Li,1)-t+1
-        for k=1:15
+        for k=1:m
           S(i,k)=(Li(i,1,k)-Li(i+t-1,1,k))^2+(Li(i,2,k)-Li(i+t-1,2,k))^2+(Li(i,3,k)-Li(i+t-1,3,k))^2;
         end
     end
@@ -149,7 +149,7 @@ end
 OMSD=zeros(size(Li,1),1);
 for t=1:size(Li,1)
     S=zeros(size(Li,3),1);
-    for k=1:15
+    for k=1:m
     S(k)=(Li(1,1,k)-Li(t,1,k))^2+(Li(1,2,k)-Li(t,2,k))^2+(Li(1,3,k)-Li(t,3,k))^2;
     end
     OMSD(t)=mean(S);
@@ -159,7 +159,7 @@ plot(t,OMSD)
 hold on
 %% Plot the result of TMSD
 t=(1:size(TMSD,1))*2;
-%plot(log(t),log(TMSD/15))
+%plot(log(t),log(TMSD/m))
 plot(t,TMSD/m)
 hold off
 xlabel('t(fs)')
@@ -167,12 +167,12 @@ ylabel('MSD(A^2)')
 saveas(gcf,'MSDplot.jpg')
 %%
 % t=(1:size(TMSD,1))*2;
-% plot(log(t(1:end)),log(TMSD/15))
+% plot(log(t(1:end)),log(TMSD/m))
 % hold on
 %%
 % t=(1:size(TMSD,1))*2;
-% plot(log(t(403:end-50)),diff(log(TMSD(403:end-49)/15))/2)
-% plot(t(403:end-5000-200),diff(TMSD(403:end-4999-200)/15)/2)
+% plot(log(t(403:end-50)),diff(log(TMSD(403:end-49)/m))/2)
+% plot(t(403:end-5000-200),diff(TMSD(403:end-4999-200)/m)/2)
 % hold on
 % line([8 12],[0 0],'Color','red','LineStyle','--')
 
