@@ -4,13 +4,13 @@ filename = 'XDATCAR';
 delimiter = ' ';
 startRow = 7;
 endRow = 7;
-formatSpec = '%f%f%f%[^\n\r]';
+formatSpec = '%f%f%f%f%[^\n\r]';
 fileID = fopen(filename,'r');
 dataArray = textscan(fileID, formatSpec, endRow-startRow+1, 'Delimiter', delimiter, 'MultipleDelimsAsOne', true, 'TextType', 'string', 'HeaderLines', startRow-1, 'ReturnOnError', false, 'EndOfLine', '\r\n')
 fclose(fileID);
 m = dataArray{1,:};
-n=sum(cell2mat(dataArray(1,1:end-1)))+2;
-clearvars filename delimiter startRow endRow formatSpec fileID dataArray ans;
+n=sum(cell2mat(dataArray(1,1:end-1)),'omitnan')+2;
+%clearvars filename delimiter startRow endRow formatSpec fileID dataArray ans;
 
 %% Get fractional coordinates 
 filename = 'XDATCAR_fract.xyz';
